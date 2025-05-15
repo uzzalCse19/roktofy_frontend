@@ -23,6 +23,8 @@ import PaymentHistory from '../pages/public/PaymentHistory';
 import CreateEvent2 from '../pages/public/CreateEvent2';
 import EventAcceptedButton from '../components/blood/EventAcceptedButton';
 import EventInfo from '../components/blood/EventInfo';
+import PasswordReset from '../components/auth/PasswordReset';
+import PasswordResetConfirm from '../components/auth/PasswordResetConfirm';
 
 export const AppRoutes = () => {
   return (
@@ -50,6 +52,9 @@ export const AppRoutes = () => {
         <Route path="/payment/history" element={<PaymentHistory />} />
         <Route path="/event-accept" element={<EventAcceptedButton />} />
         <Route path="/event-info" element={<EventInfo />} />
+        <Route path="/password/reset" element={<PasswordReset />} />
+        <Route path="/password/reset/confirm/:uid/:token" element={<PasswordResetConfirm />} />
+
 
       
       </Route>

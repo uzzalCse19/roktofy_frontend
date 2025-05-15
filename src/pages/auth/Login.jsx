@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import Alert from "../../components/common/Alert";
 import { useState } from "react";
 import useAuthContext from "../../hooks/useAuthContext";
 
@@ -13,7 +12,7 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const { errorMsg, loginUser } = useAuthContext();
+  const { loginUser } = useAuthContext(); // Removed errorMsg since we won't use it
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data) => {
@@ -32,7 +31,7 @@ const Login = () => {
     <div className="flex min-h-screen items-center justify-center px-4 py-12 bg-base-200">
       <div className="card w-full max-w-md bg-base-100 shadow-xl">
         <div className="card-body">
-          {errorMsg && <Alert error={errorMsg} />}
+          {/* Removed all message displays */}
           <h2 className="card-title text-2xl font-bold">Sign in</h2>
           <p className="text-base-content/70">
             Enter your email and password to access your account
@@ -77,6 +76,14 @@ const Login = () => {
                   {errors.password.message}
                 </span>
               )}
+              <label className="label">
+                <Link 
+                  to="/password/reset" 
+                  className="label-text-alt link link-primary"
+                >
+                  Forgot password?
+                </Link>
+              </label>
             </div>
 
             <button
@@ -88,13 +95,19 @@ const Login = () => {
             </button>
           </form>
 
-          <div className="text-center mt-4">
+          <div className="flex flex-col items-center mt-4 space-y-2">
             <p className="text-base-content/70">
               Don&apos;t have an account?{" "}
               <Link to="/register" className="link link-primary">
                 Sign up
               </Link>
             </p>
+            <Link 
+              to="/password/reset" 
+              className="btn btn-ghost btn-sm text-primary"
+            >
+              Reset Password
+            </Link>
           </div>
         </div>
       </div>
