@@ -15,7 +15,6 @@ const BloodEventCard = ({
     completed: 'bg-blue-100 text-blue-800'
   };
 
- 
   const hasAccepted = event.donations?.some(donation => donation.donor.id === currentUserId) || 
                     (event.accepted_by && event.accepted_by.includes(currentUserId));
 
@@ -65,6 +64,12 @@ const BloodEventCard = ({
               <p className="text-gray-600 mt-1">
                 Needed by: <span className="font-medium">{format(new Date(event.required_date), 'PPP')}</span>
               </p>
+              {event.request_type && (
+                <p className="text-sm text-gray-600">Request Type: <span className="font-medium">{event.request_type}</span></p>
+              )}
+              {event.urgency_level && event.urgency_level.toLowerCase() !== 'normal' && (
+                <p className="text-sm text-red-600 font-semibold">Urgency: {event.urgency_level}</p>
+              )}
             </div>
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[event.status] || 'bg-gray-100 text-gray-800'}`}>
               {event.status.charAt(0).toUpperCase() + event.status.slice(1)}

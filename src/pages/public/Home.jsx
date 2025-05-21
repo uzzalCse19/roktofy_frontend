@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { donationService } from '../../services/api/donations';
 import { DonorCard } from '../../components/blood/DonorCard';
 import Hero from './Hero';
+import PublicStatsDashboard from '../../components/layout/PublicStatsDashboard';
 
 const Home = () => {
   const [donors, setDonors] = useState([]);
@@ -64,7 +65,7 @@ const Home = () => {
                     View All Donors
                   </Link>
                 </div>
-
+               <PublicStatsDashboard />
                 <div className="bg-white flex flex-col mt-20">
                   <div className="flex-grow"></div>
                   <div className="pb-20 px-6 sm:px-8 lg:px-12">

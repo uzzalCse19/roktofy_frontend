@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import { Link, useNavigate } from "react-router-dom"; 
 import { LogOut, LogIn, UserPlus, Users } from "lucide-react";
 import defaultImage from '../../assets/images/default.png';
 import { FaTint } from "react-icons/fa";
@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 const Navbar = () => {
   const { user, logoutUser } = useAuth();
   const [currentUser, setCurrentUser] = useState(user);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setCurrentUser(user);
@@ -19,6 +20,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await logoutUser();
+    navigate('/'); 
   };
 
   return (
@@ -35,7 +37,12 @@ const Navbar = () => {
         {/* Links + Avatar */}
         <div className="flex items-center gap-6 text-gray-700 font-medium dark:text-gray-200">
           {/* Desktop Links */}
+          
           <div className="hidden md:flex items-center gap-6">
+              <Link to="/" className="hover:text-red-600 transition-colors duration-200">
+                Home
+              </Link>
+
             <Link to="/donors" className="hover:text-red-600 transition-colors duration-200">
               <Users size={18} className="inline-block mr-1" />
               Donors
@@ -45,11 +52,18 @@ const Navbar = () => {
               <Link to="/event-page" className="hover:text-red-600 transition-colors duration-200">
                 Events
               </Link>
+              
             )}
+               <Link to="about" className="hover:text-red-600 transition-colors duration-200">
+                About
+              </Link>
+              <Link to="/contact" className="hover:text-red-600 transition-colors duration-200">
+                Contact
+              </Link>
 
             {currentUser ? (
               <span className="text-gray-500 text-sm hidden lg:inline dark:text-gray-300">
-                {currentUser.email}
+                {/* {currentUser.email} */}
               </span>
             ) : (
               <>
@@ -126,6 +140,14 @@ const Navbar = () => {
                     Logout
                   </button>
                 </li>
+                                <li>
+                  <Link
+                    to="/update-avatar"
+                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base"
+                  >
+                    
+                  </Link>
+                </li>
               </ul>
             </div>
           )}
@@ -173,6 +195,11 @@ const Navbar = () => {
                 <li>
                   <button onClick={handleLogout} className="text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">
                     Logout
+                  </button>
+                </li>
+                                <li>
+                  <button  className="text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    {user.email}
                   </button>
                 </li>
               </>

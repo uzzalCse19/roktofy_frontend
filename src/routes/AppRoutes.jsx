@@ -25,6 +25,20 @@ import EventAcceptedButton from '../components/blood/EventAcceptedButton';
 import EventInfo from '../components/blood/EventInfo';
 import PasswordReset from '../components/auth/PasswordReset';
 import PasswordResetConfirm from '../components/auth/PasswordResetConfirm';
+// import Dashboard2 from '../components/layout/dashboard2';
+import PublicStatsDashboard from '../components/layout/PublicStatsDashboard';
+import BloodEvents from '../components/blood/BloodEvents';
+import DonationHistory from '../components/blood/DonationHistory';
+import AboutPage from '../pages/public/AboutPage';
+import ContactPage from '../pages/public/ContactPage';
+import Sidebar from '../pages/public/Sidebar';
+import MyRequest from '../pages/public/MyRequest';
+import DonorRequests from '../components/blood/DonorRequests';
+import MyEvents from '../pages/dashboard/MyEvents';
+
+// import CreateEventForm from '../components/blood/CreateEventForm';
+// import DonationHistory from '../components/blood/DonationHistory';
+// import BloodEventList from '../components/blood/BloodEventList';
 
 export const AppRoutes = () => {
   return (
@@ -40,7 +54,7 @@ export const AppRoutes = () => {
         <Route path='profile' element={<Profile/>} />
         <Route path="/update-avatar" element={<UpdateAvatar />} />
         <Route path="/update-blood" element={<UpdateBloodGroup />} />
-        <Route path='/dashboard' element={< DashboardPage/>} />
+      
         <Route path="/update-profile" element={<UpdateProfileInfo />} />
         <Route path="/create-donor-profile" element={<DonorProfile />} />
         <Route path="/donate" element={<DonatePage />} />
@@ -48,15 +62,25 @@ export const AppRoutes = () => {
         <Route path="/payment/fail" element={<PaymentFailed />} />
         <Route path="/payment/cancel" element={<PaymentCancelled />} />
         <Route path="/convenceToDonateMoney" element={<ConvencingPage />} />
-        <Route path="/event-page" element={<EventPage />} />
+       
         <Route path="/payment/history" element={<PaymentHistory />} />
         <Route path="/event-accept" element={<EventAcceptedButton />} />
         <Route path="/event-info" element={<EventInfo />} />
         <Route path="/password/reset" element={<PasswordReset />} />
         <Route path="/password/reset/confirm/:uid/:token" element={<PasswordResetConfirm />} />
-
-
-      
+        <Route path="/new-section" element={<PublicStatsDashboard />} />
+        <Route path="/events_new" element={<BloodEvents />} />
+        {/* <Route path="/events/create" element={<CreateEventForm />} /> */}
+        <Route path="/donation-history" element={<DonationHistory />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/sidebar" element={<Sidebar />} />
+        <Route path="/create-event" element={<CreateEvent2 />} />
+        <Route path="/my-request" element={<MyRequest />} />
+        <Route path="/donor-request" element={<DonorRequests />} />
+        <Route path="/my-event" element={<MyEvents />} />
+         <Route path="/event-page" element={<EventPage />} />
+          <Route path='/dashboard' element={< DashboardPage/>} />
       </Route>
     </Routes> 
   );
