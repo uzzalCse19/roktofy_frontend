@@ -20,7 +20,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await logoutUser();
-    navigate('/'); 
+    navigate("/"); 
   };
 
   return (
@@ -37,29 +37,25 @@ const Navbar = () => {
         {/* Links + Avatar */}
         <div className="flex items-center gap-6 text-gray-700 font-medium dark:text-gray-200">
           {/* Desktop Links */}
-          
           <div className="hidden md:flex items-center gap-6">
-              <Link to="/" className="hover:text-red-600 transition-colors duration-200">
-                Home
-              </Link>
-
+            <Link to="/" className="hover:text-red-600 transition-colors duration-200">
+              Home
+            </Link>
             <Link to="/donors" className="hover:text-red-600 transition-colors duration-200">
               <Users size={18} className="inline-block mr-1" />
               Donors
             </Link>
-
             {currentUser && (
               <Link to="/event-page" className="hover:text-red-600 transition-colors duration-200">
                 Events
               </Link>
-              
             )}
-               <Link to="about" className="hover:text-red-600 transition-colors duration-200">
-                About
-              </Link>
-              <Link to="/contact" className="hover:text-red-600 transition-colors duration-200">
-                Contact
-              </Link>
+            <Link to="about" className="hover:text-red-600 transition-colors duration-200">
+              About
+            </Link>
+            <Link to="/contact" className="hover:text-red-600 transition-colors duration-200">
+              Contact
+            </Link>
 
             {currentUser ? (
               <span className="text-gray-500 text-sm hidden lg:inline dark:text-gray-300">
@@ -99,53 +95,33 @@ const Navbar = () => {
                 className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-white rounded-box w-52 divide-y dark:bg-gray-800"
               >
                 <li>
-                  <Link
-                    to="/profile"
-                   className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base"
-                  >
+                  <Link to="/profile" className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base">
                     Profile
                   </Link>
                 </li>
-                                <li>
-                  <Link
-                    to="dashboard"
-                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base"
-                  >
+                <li>
+                  <Link to="dashboard" className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base">
                     Dashboard
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="/create-donor-profile"
-                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base"
-                  >
-                    
+                  <Link to="/create-donor-profile" className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base">
                     Create a Donor Account
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="/update-avatar"
-                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base"
-                  >
+                  <Link to="/update-avatar" className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base">
                     Update Avatar
                   </Link>
                 </li>
                 <li>
-                  <button
-                    onClick={handleLogout}
-                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 w-full text-left text-base"
-                  >
+                  <button onClick={handleLogout} className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 w-full text-left text-base">
                     <LogOut size={16} className="mr-1" />
                     Logout
                   </button>
                 </li>
-                                <li>
-                  <Link
-                    to="/update-avatar"
-                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base"
-                  >
-                    
+                <li>
+                  <Link to="/update-avatar" className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base">
                   </Link>
                 </li>
               </ul>
@@ -153,15 +129,10 @@ const Navbar = () => {
           )}
         </div>
 
-        
+        {/* Mobile Menu */}
         <div className="md:hidden dropdown dropdown-end ml-2">
           <label tabIndex={0} className="btn btn-ghost btn-circle hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </label>
@@ -197,11 +168,13 @@ const Navbar = () => {
                     Logout
                   </button>
                 </li>
-                                <li>
-                  <button  className="text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    {user.email}
-                  </button>
-                </li>
+                {currentUser?.email && (
+                  <li>
+                    <button className="text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                      {currentUser.email}
+                    </button>
+                  </li>
+                )}
               </>
             ) : (
               <>

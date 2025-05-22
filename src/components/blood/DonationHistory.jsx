@@ -50,31 +50,36 @@ const DonationHistory = () => {
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {donations.map(donation => (
-                                <tr key={donation.id}>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        {new Date(donation.donation_date).toLocaleDateString()}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        {donation.request_info.blood_type}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        {donation.request_info.location}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        {donation.units_donated}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                            donation.is_verified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                                        }`}>
-                                            {donation.is_verified ? 'Verified' : 'Pending Verification'}
-                                        </span>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
+                       <tbody className="bg-white divide-y divide-gray-200">
+  {donations.map((donation) => (
+    <tr key={donation.id}>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {new Date(donation.donation_date).toLocaleDateString()}
+      </td>
+<td className="px-6 py-4 whitespace-nowrap">
+  {donation.request_info?.blood_type || donation.event_info?.blood_type || 'N/A'}
+</td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {donation.request_info?.location || donation.event_info?.location  || 'N/A'}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {donation.units_donated}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <span
+          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+            donation.is_verified
+              ? 'bg-green-100 text-green-800'
+              : 'bg-yellow-100 text-yellow-800'
+          }`}
+        >
+          {donation.is_verified ? 'Verified' : 'Pending Verification'}
+        </span>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
                     </table>
                 </div>
             )}
