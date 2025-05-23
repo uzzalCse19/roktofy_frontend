@@ -35,6 +35,7 @@ import Sidebar from '../pages/public/Sidebar';
 import MyRequest from '../pages/public/MyRequest';
 import DonorRequests from '../components/blood/DonorRequests';
 import MyEvents from '../pages/dashboard/MyEvents';
+import AdminDashboard from '../components/dashboard/AdminDashboard';
 
 // import CreateEventForm from '../components/blood/CreateEventForm';
 // import DonationHistory from '../components/blood/DonationHistory';
@@ -79,8 +80,9 @@ export const AppRoutes = () => {
         <Route path="/my-request" element={<MyRequest />} />
         <Route path="/donor-request" element={<DonorRequests />} />
         <Route path="/my-event" element={<MyEvents />} />
-         <Route path="/event-page" element={<EventPage />} />
-          <Route path='/dashboard' element={< DashboardPage/>} />
+        <Route path="/event-page" element={<EventPage />} />
+         <Route path='/dashboard' element={< DashboardPage/>} />
+         <Route path='/admin-dashboard' element={< AdminDashboard/>} />
       </Route>
     </Routes> 
   );

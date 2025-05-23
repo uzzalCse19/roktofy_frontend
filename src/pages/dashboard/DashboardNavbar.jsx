@@ -1,4 +1,4 @@
-// components/dashboard/DashboardNavbar.jsx
+=
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut, Menu, X, Bell } from "lucide-react";
 import defaultImage from '../../assets/images/default.png';

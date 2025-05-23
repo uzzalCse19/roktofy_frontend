@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "https://roktofy.vercel.app/api", 
+  baseURL: "http://127.0.0.1:8000/api", 
 });
 
 apiClient.interceptors.request.use(
