@@ -16,6 +16,7 @@ const DashboardPage = () => {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
+  // const navigate = useNavigate();
   const navigate = useNavigate();
 
   useEffect(() => {

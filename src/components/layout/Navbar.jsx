@@ -102,11 +102,19 @@ const Navbar = () => {
                     Profile
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link to="/dashboard" className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base">
                     Dashboard
                   </Link>
-                </li>
+                </li> */}
+                <li>
+  <Link 
+    to={currentUser?.is_staff ? '/admin-dashboard' : '/dashboard'} 
+    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base"
+  >
+    Dashboard
+  </Link>
+</li>
                 <li>
                   <Link to="/create-donor-profile" className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 flex items-center rounded px-2 py-1 text-base">
                     Create a Donor Account

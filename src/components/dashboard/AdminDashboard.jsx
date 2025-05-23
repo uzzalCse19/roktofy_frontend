@@ -9,6 +9,8 @@ import apiClient from '../../services/http';
 import { FaBell, FaUserCircle, FaTint } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
+
+
 const AdminDashboard = () => {
   // State management
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -17,6 +19,7 @@ const AdminDashboard = () => {
 const { user } = useAuth();
   const [requests, setRequests] = useState([]);
   const [donations, setDonations] = useState([]);
+  const navigate = useNavigate();
   const [settings, setSettings] = useState({
     maintenanceMode: false,
     donationCooldown: 90,
@@ -391,7 +394,7 @@ const { user } = useAuth();
                 <span className="text-sm font-medium text-gray-700">
                   {user?.first_name || user?.last_name
                     ? `${user?.first_name || ""} ${user?.last_name || ""}`.trim()
-                    : "Admin"}
+                    : "User"}
                 </span>
                 <span className="text-xs text-gray-500">{user?.email}</span>
               </div>
