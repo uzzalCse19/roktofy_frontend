@@ -18,7 +18,7 @@ const Sidebar = () => {
     <aside className="w-64 bg-white shadow-lg p-6 hidden md:block">
       <div className="flex-1 mb-8 mt-4">
         <Link to="/dashboard" className="text-2xl font-extrabold text-red-600 flex items-center gap-1">
-          <FaTint className="text-red-600" />
+          {/* <FaTint className="text-red-600" /> */}
         </Link>
       </div>
       <nav className="flex flex-col space-y-4">
