@@ -1,160 +1,224 @@
-import { useEffect, useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import Sidebar from '../public/Sidebar';
-import DonorRequests from '../../components/blood/DonorRequests';
-import EventPage from './EventPage';
-import DonationHistory from '../../components/blood/DonationHistory';
-import { getEvents } from '../../services/http';
-import BloodEventCard from '../../components/blood/BloodEventCard';
 import useAuth from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
-import { FaTint, FaBell, FaUserCircle, FaChevronDown } from 'react-icons/fa';
+import { FaTint, FaBell, FaUserCircle } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 
 const DashboardPage = () => {
-  const [activeSection, setActiveSection] = useState('requests');
-  const [showAllEvents, setShowAllEvents] = useState(false);
-  const [events, setEvents] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
-  // const navigate = useNavigate();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getEvents();
-        setEvents(response.data);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchEvents();
-  }, []);
-
-  const handleAccept = (eventId, userEmail) => {
-    setEvents(prev =>
-      prev.map(event =>
-        event.id === eventId
-          ? { ...event, accepted_by: [...(event.accepted_by || []), userEmail] }
-          : event
-      )
-    );
-  };
-
-  const displayedEvents = showAllEvents ? events : events.slice(0, 6);
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Enhanced Professional Dashboard Navbar */}
-      <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-40 h-16 border-b border-gray-200">
-        <div className="flex items-center justify-between h-full px-6 mx-auto max-w-screen-2xl">
-          {/* Logo Section */}
-          <Link to="/" className="flex items-center space-x-2">
-            <FaTint className="text-red-600 text-2xl" />
-            <span className="text-xl font-bold text-red-600 tracking-tight">Roktofy</span>
-          </Link>
-
-          {/* User Navigation */}
-          <div className="flex items-center space-x-6">
-            {/* Notification Badge */}
-            <button className="relative text-gray-500 hover:text-gray-700 transition-colors">
-              <FaBell className="text-xl" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                3
-              </span>
-            </button>
-
-            {/* User Profile Dropdown */}
-            <div
-              className="flex items-center space-x-2 group cursor-pointer"
-              onClick={() => navigate("/profile")}
-            >
-              <div className="flex items-center justify-center w-8 h-8 bg-red-100 rounded-full">
-                <FaUserCircle className="text-red-600 text-xl" />
-              </div>
-              <div className="hidden md:flex flex-col items-start">
-                <span className="text-sm font-medium text-gray-700">
-                  {user?.first_name || user?.last_name
-                    ? `${user?.first_name || ""} ${user?.last_name || ""}`.trim()
-                    : "User"}
-                </span>
-                <span className="text-xs text-gray-500">{user?.email}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Sidebar - unchanged */}
-      <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+      {/* Persistent Sidebar */}
+      <Sidebar />
       
-      {/* Main Content - added pt-16 to account for navbar height */}
-      <main className="flex-1 p-6 overflow-y-auto space-y-8 pt-16">
-        {/* Rest of your content remains exactly the same */}
-        <section 
-          id="requests"
-          className="bg-white rounded-lg shadow-md p-6"
-          onMouseEnter={() => setActiveSection('requests')}
-        >
-          <h2 className="text-2xl font-semibold text-red-600 text-center mb-6">My Donor Requests</h2>
-          <DonorRequests />
-        </section>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Top Navigation Bar */}
+        <header className="bg-white shadow-sm h-16 border-b border-gray-200">
+          <div className="flex items-center justify-between h-full px-6 mx-auto max-w-screen-2xl">
+            <Link to="/" className="flex items-center space-x-2">
+              <FaTint className="text-red-600 text-2xl" />
+              <span className="text-xl font-bold text-red-600 tracking-tight">Roktofy</span>
+            </Link>
 
-        {/* Events Section */}
-        <section 
-          id="events"
-          className="bg-white rounded-lg shadow-md p-6"
-          onMouseEnter={() => setActiveSection('events')}
-        >
-          <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-            <h2 className="text-2xl font-semibold text-red-600 text-center mb-6">Recipient Request</h2>
-            {events.length > 6 && (
-              <button
-                onClick={() => setShowAllEvents(!showAllEvents)}
-                className="text-red-600 hover:text-red-800 font-medium"
-              >
-                {showAllEvents ? 'Show Less' : 'Show All'}
+            <div className="flex items-center space-x-6">
+              <button className="relative text-gray-500 hover:text-gray-700 transition-colors">
+                <FaBell className="text-xl" />
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                  3
+                </span>
               </button>
-            )}
-          </div>
 
-          {isLoading ? (
-            <p className="text-center py-4 text-gray-500">Loading events...</p>
-          ) : events.length === 0 ? (
-            <p className="text-center py-4 text-gray-500">No events available.</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {displayedEvents.map(event => (
-                <BloodEventCard
-                  key={event.id}
-                  event={event}
-                  currentUserId={user?.id}
-                  onDonationCreated={() => handleAccept(event.id, user?.email)}
-                  showAcceptButton={true}
-                />
-              ))}
+              <div
+                className="flex items-center space-x-2 group cursor-pointer"
+                onClick={() => navigate("/profile")}
+              >
+                <div className="flex items-center justify-center w-8 h-8 bg-red-100 rounded-full">
+                  <FaUserCircle className="text-red-600 text-xl" />
+                </div>
+                <div className="hidden md:flex flex-col items-start">
+                  <span className="text-sm font-medium text-gray-700">
+                    {user?.first_name || user?.last_name
+                      ? `${user?.first_name || ""} ${user?.last_name || ""}`.trim()
+                      : "User"}
+                  </span>
+                  <span className="text-xs text-gray-500">{user?.email}</span>
+                </div>
+              </div>
             </div>
-          )}
-        </section>
+          </div>
+        </header>
 
-        {/* Donation History */}
-        <section 
-          id="history"
-          className="bg-white rounded-lg shadow-md p-6"
-          onMouseEnter={() => setActiveSection('history')}
-        >
-          <h2 className="text-2xl font-semibold text-red-600 text-center mb-6">Donation History</h2>
-          <DonationHistory />
-        </section>
-      </main>
+        {/* Dynamic Content Area */}
+        <main className="flex-1 p-6 overflow-y-auto">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 };
 
 export default DashboardPage;
+// import { useEffect, useState } from 'react';
+// import Sidebar from '../public/Sidebar';
+// import DonorRequests from '../../components/blood/DonorRequests';
+// import EventPage from './EventPage';
+// import DonationHistory from '../../components/blood/DonationHistory';
+// import { getEvents } from '../../services/http';
+// import BloodEventCard from '../../components/blood/BloodEventCard';
+// import useAuth from '../../hooks/useAuth';
+// import { Link } from 'react-router-dom';
+// import { FaTint, FaBell, FaUserCircle, FaChevronDown } from 'react-icons/fa';
+// import { useNavigate } from "react-router-dom";
+
+// const DashboardPage = () => {
+//   const [activeSection, setActiveSection] = useState('requests');
+//   const [showAllEvents, setShowAllEvents] = useState(false);
+//   const [events, setEvents] = useState([]);
+//   const [isLoading, setIsLoading] = useState(true);
+//   const { user } = useAuth();
+//   // const navigate = useNavigate();
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     const fetchEvents = async () => {
+//       try {
+//         setIsLoading(true);
+//         const response = await getEvents();
+//         setEvents(response.data);
+//       } catch (error) {
+//         console.error('Error fetching events:', error);
+//       } finally {
+//         setIsLoading(false);
+//       }
+//     };
+//     fetchEvents();
+//   }, []);
+
+//   const handleAccept = (eventId, userEmail) => {
+//     setEvents(prev =>
+//       prev.map(event =>
+//         event.id === eventId
+//           ? { ...event, accepted_by: [...(event.accepted_by || []), userEmail] }
+//           : event
+//       )
+//     );
+//   };
+
+//   const displayedEvents = showAllEvents ? events : events.slice(0, 6);
+
+//   return (
+//     <div className="flex min-h-screen bg-gray-50">
+//       {/* Enhanced Professional Dashboard Navbar */}
+//       <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-40 h-16 border-b border-gray-200">
+//         <div className="flex items-center justify-between h-full px-6 mx-auto max-w-screen-2xl">
+//           {/* Logo Section */}
+//           <Link to="/" className="flex items-center space-x-2">
+//             <FaTint className="text-red-600 text-2xl" />
+//             <span className="text-xl font-bold text-red-600 tracking-tight">Roktofy</span>
+//           </Link>
+
+//           {/* User Navigation */}
+//           <div className="flex items-center space-x-6">
+//             {/* Notification Badge */}
+//             <button className="relative text-gray-500 hover:text-gray-700 transition-colors">
+//               <FaBell className="text-xl" />
+//               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+//                 3
+//               </span>
+//             </button>
+
+//             {/* User Profile Dropdown */}
+//             <div
+//               className="flex items-center space-x-2 group cursor-pointer"
+//               onClick={() => navigate("/profile")}
+//             >
+//               <div className="flex items-center justify-center w-8 h-8 bg-red-100 rounded-full">
+//                 <FaUserCircle className="text-red-600 text-xl" />
+//               </div>
+//               <div className="hidden md:flex flex-col items-start">
+//                 <span className="text-sm font-medium text-gray-700">
+//                   {user?.first_name || user?.last_name
+//                     ? `${user?.first_name || ""} ${user?.last_name || ""}`.trim()
+//                     : "User"}
+//                 </span>
+//                 <span className="text-xs text-gray-500">{user?.email}</span>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </header>
+
+//       {/* Sidebar - unchanged */}
+//       <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+      
+//       {/* Main Content - added pt-16 to account for navbar height */}
+//       <main className="flex-1 p-6 overflow-y-auto space-y-8 pt-16">
+//         {/* Rest of your content remains exactly the same */}
+//         <section 
+//           id="requests"
+//           className="bg-white rounded-lg shadow-md p-6"
+//           onMouseEnter={() => setActiveSection('requests')}
+//         >
+//           <h2 className="text-2xl font-semibold text-red-600 text-center mb-6">My Donor Requests</h2>
+//           <DonorRequests />
+//         </section>
+
+//         {/* Events Section */}
+//         <section 
+//           id="events"
+//           className="bg-white rounded-lg shadow-md p-6"
+//           onMouseEnter={() => setActiveSection('events')}
+//         >
+//           <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+//             <h2 className="text-2xl font-semibold text-red-600 text-center mb-6">Recipient Request</h2>
+//             {events.length > 6 && (
+//               <button
+//                 onClick={() => setShowAllEvents(!showAllEvents)}
+//                 className="text-red-600 hover:text-red-800 font-medium"
+//               >
+//                 {showAllEvents ? 'Show Less' : 'Show All'}
+//               </button>
+//             )}
+//           </div>
+
+//           {isLoading ? (
+//             <p className="text-center py-4 text-gray-500">Loading events...</p>
+//           ) : events.length === 0 ? (
+//             <p className="text-center py-4 text-gray-500">No events available.</p>
+//           ) : (
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//               {displayedEvents.map(event => (
+//                 <BloodEventCard
+//                   key={event.id}
+//                   event={event}
+//                   currentUserId={user?.id}
+//                   onDonationCreated={() => handleAccept(event.id, user?.email)}
+//                   showAcceptButton={true}
+//                 />
+//               ))}
+//             </div>
+//           )}
+//         </section>
+
+//         {/* Donation History */}
+//         <section 
+//           id="history"
+//           className="bg-white rounded-lg shadow-md p-6"
+//           onMouseEnter={() => setActiveSection('history')}
+//         >
+//           <h2 className="text-2xl font-semibold text-red-600 text-center mb-6">Donation History</h2>
+//           <DonationHistory />
+//         </section>
+//       </main>
+//     </div>
+//   );
+// };
+
+// export default DashboardPage;
 
 
 // import { useEffect, useState } from 'react';
