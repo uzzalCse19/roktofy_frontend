@@ -1,4 +1,4 @@
-// src/components/blood/EventInfo.jsx
+
 import React from 'react';
 
 const EventInfo = ({ event, onDonateClick }) => {

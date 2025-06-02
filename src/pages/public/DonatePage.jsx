@@ -1,4 +1,3 @@
-// src/pages/donate/DonatePage.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/http';

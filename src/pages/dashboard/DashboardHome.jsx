@@ -1,15 +1,9 @@
 import { useState, useEffect } from 'react';
-// import DonorRequests from '../../components/blood/DonorRequests';
-// import DonationHistory from '../../components/blood/DonationHistory';
-// import { getEvents } from '../../services/http';
-// import BloodEventCard from '../../components/blood/BloodEventCard';
 import useAuth from '../../hooks/useAuth';
 import BloodEventCard from '../../components/blood/BloodEventCard';
 import { getEvents } from '../../services/http';
 import DonationHistory from '../../components/blood/DonationHistory';
 import DonorRequests from '../../components/blood/DonorRequests';
-// import useAuth from '../../hooks/useAuth';
-DonorRequests
 
 const DashboardHome = () => {
   const [showAllEvents, setShowAllEvents] = useState(false);

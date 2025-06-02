@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import useAuth from '../../hooks/useAuth';
 import apiClient from '../../services/http';
-// import apiClient from '../../services/http';
 
 const BloodEvents = () => {
     const { user } = useAuth();

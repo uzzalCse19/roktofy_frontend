@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// <-- Make sure the path is correct
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/http';
 

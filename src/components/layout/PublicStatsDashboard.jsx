@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
-import apiClient from '../../services/http';  // Import your API client
+import apiClient from '../../services/http';  
 
 const PublicStatsDashboard = () => {
   const [stats, setStats] = useState({

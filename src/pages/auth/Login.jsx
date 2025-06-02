@@ -12,7 +12,7 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const { loginUser } = useAuthContext(); // Removed errorMsg since we won't use it
+  const { loginUser } = useAuthContext(); 
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data) => {
