@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const MainLayout = () => {
   const location = useLocation();
   
-  // Check if current route is dashboard
+ 
   const isDashboard =
     location.pathname.startsWith('/dashboard') ||
     location.pathname.startsWith('/admin-dashboard');
