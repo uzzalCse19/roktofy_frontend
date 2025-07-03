@@ -57,7 +57,8 @@ export const DonorCard = ({ donor }) => {
   };
 
   return (
-    <div className="bg-base-200 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-red-200 p-6 sm:p-8 w-full max-w-2xl ml-4 sm:ml-12">
+    <div className="bg-base-200 rounded-3xl shadow-lg p-6 w-full">
+      
       <div className="flex flex-col sm:flex-row items-center gap-4">
         <BloodGroupBadge bloodGroup={donor.blood_type} size="xl" />
         <div className="text-center sm:text-left">

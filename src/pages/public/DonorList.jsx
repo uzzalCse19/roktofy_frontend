@@ -1,212 +1,223 @@
-import { useState, useEffect, useMemo } from 'react';
+/* DonorList.jsx – Client-side pagination */
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Container,
-  Grid,
-  Typography,
-  TextField,
-  Box,
-  CircularProgress,
-  Alert,
-  Pagination,
+  Container, Grid, Typography, TextField, Box,
+  CircularProgress, Alert, Pagination,
 } from '@mui/material';
+
 import DonorCard from '../../components/blood/DonorCard';
+import RequestBloodModal from '../../components/blood/RequestBloodModal';
 import apiClient from '../../services/http';
 import useAuthContext from '../../hooks/useAuthContext';
-import RequestBloodModal from '../../components/blood/RequestBloodModal';
 import useDebounce from '../../hooks/useDebounce';
 
+// ── Config
+const PAGE_SIZE = 16;
+const BLOOD_TYPES = ['', 'O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
+
 const DonorList = () => {
-  const [donors, setDonors] = useState([]);
+  // ── State
+  const [allDonors, setAllDonors] = useState([]);         // All donors from API
+  const [filteredDonors, setFilteredDonors] = useState([]); // After search/filter
+  const [currentPageDonors, setCurrentPageDonors] = useState([]); // Current page
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [bloodTypeFilter, setBloodTypeFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedDonor, setSelectedDonor] = useState(null);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
   const [requestSuccess, setRequestSuccess] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const donorsPerPage = 9;
 
   const { user, authTokens } = useAuthContext() || {};
   const navigate = useNavigate();
-
-  // Use debounced search term for filtering performance
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
+  // ───────────────────────────────────────────
+  // 📡 Fetch ALL donors initially
+  // ───────────────────────────────────────────
   useEffect(() => {
-    let active = true;
+    const controller = new AbortController();
+
     const fetchDonors = async () => {
       try {
         setLoading(true);
-        let url = '/donor-list/';
-        if (bloodTypeFilter) {
-          url += `?blood_type=${encodeURIComponent(bloodTypeFilter)}`;
-        }
-        const response = await apiClient.get(url);
-        if (!active) return;
-        setDonors(response.data);
+        const params = {};
+        if (bloodTypeFilter) params.blood_type = bloodTypeFilter;
+
+        const { data } = await apiClient.get('/donor-list/', {
+          params,
+          signal: controller.signal,
+        });
+
+        const allDonorsData = data.results || data;
+        setAllDonors(allDonorsData);
         setError('');
       } catch (err) {
-        if (!active) return;
-        setError('Failed to fetch donors. Please try again later.');
-        console.error(err);
+        if (err.name !== 'CanceledError') {
+          setError('Failed to fetch donors. Please try again later.');
+          console.error(err);
+        }
       } finally {
-        if (active) setLoading(false);
+        setLoading(false);
       }
     };
 
     fetchDonors();
-
-    return () => {
-      active = false; // Cancel any pending updates
-    };
+    return () => controller.abort();
   }, [bloodTypeFilter]);
 
-  const handleRequestClick = (donor) => {
-    if (!authTokens) {
-      navigate('/auth/login', { state: { from: '/donors' } });
-      return;
-    }
-    setSelectedDonor(donor);
-    setRequestModalOpen(true);
-  };
-
-  const handleSubmitRequest = async (formData) => {
-    try {
-      await apiClient.post('/blood-requests/', {
-        ...formData,
-        requester: user.id,
-      });
-      setRequestSuccess(true);
-      setRequestModalOpen(false);
-      setTimeout(() => setRequestSuccess(false), 5000);
-    } catch (err) {
-      setError('Failed to submit request. Please try again.');
-      console.error(err);
-    }
-  };
-
-
-  const filteredDonors = useMemo(() => {
-    return donors.filter((donor) => {
-      const search = debouncedSearchTerm.toLowerCase();
-      return (
-        donor.full_name.toLowerCase().includes(search) ||
-        donor.address.toLowerCase().includes(search)
-      );
+  // ───────────────────────────────────────────
+  // 🔍 Apply search and blood type filtering
+  // ───────────────────────────────────────────
+  useEffect(() => {
+    const kw = debouncedSearchTerm.toLowerCase();
+    
+    const filtered = allDonors.filter(donor => {
+      const matchesSearch = donor.full_name.toLowerCase().includes(kw) || 
+                          donor.address.toLowerCase().includes(kw);
+      const matchesBloodType = !bloodTypeFilter || donor.blood_type === bloodTypeFilter;
+      return matchesSearch && matchesBloodType;
     });
-  }, [donors, debouncedSearchTerm]);
 
+    setFilteredDonors(filtered);
+    setTotalPages(Math.ceil(filtered.length / PAGE_SIZE));
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [allDonors, debouncedSearchTerm, bloodTypeFilter]);
 
-  const currentDonors = useMemo(() => {
-    const indexOfLastDonor = currentPage * donorsPerPage;
-    const indexOfFirstDonor = indexOfLastDonor - donorsPerPage;
-    return filteredDonors.slice(indexOfFirstDonor, indexOfLastDonor);
+  // ───────────────────────────────────────────
+  // 📄 Paginate the filtered results
+  // ───────────────────────────────────────────
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+    setCurrentPageDonors(filteredDonors.slice(startIndex, endIndex));
   }, [filteredDonors, currentPage]);
 
-  const totalPages = Math.ceil(filteredDonors.length / donorsPerPage);
+  // ───────────────────────────────────────────
+  // ↪ Handlers
+  // ───────────────────────────────────────────
+  const handleRequestClick = useCallback(
+    (donor) => {
+      if (!authTokens) {
+        navigate('/auth/login', { state: { from: '/donors' } });
+        return;
+      }
+      setSelectedDonor(donor);
+      setRequestModalOpen(true);
+    },
+    [authTokens, navigate],
+  );
 
-  const handlePageChange = (event, value) => {
+  const handlePageChange = (_, value) => {
     setCurrentPage(value);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleRequestSuccess = () => {
+    setRequestSuccess(true);
+    setRequestModalOpen(false);
+    setTimeout(() => setRequestSuccess(false), 3000);
+  };
+
+  // ───────────────────────────────────────────
+  // 🖼️  JSX
+  // ───────────────────────────────────────────
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom align="center">
+      <Typography variant="h4" align="center" sx={{ fontWeight: 600, mb: 4 }}>
         Available Blood Donors
       </Typography>
 
-      <Box
-        sx={{
-          mb: 4,
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          gap: 2,
-        }}
-      >
+      {/* Search & Filter */}
+      <Box sx={{ mb: 4, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
         <TextField
-          fullWidth
+          fullWidth 
+          size="small" 
           variant="outlined"
           placeholder="Search by name or location..."
-          value={searchTerm}
+          value={searchTerm} 
           onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ flexGrow: 1 }}
         />
-
         <TextField
-          select
-          label="Blood Group"
+          size="small" 
+          select 
+          label="Blood Group" 
           value={bloodTypeFilter}
-          onChange={(e) => setBloodTypeFilter(e.target.value)}
+          onChange={(e) => setBloodTypeFilter(e.target.value)} 
           SelectProps={{ native: true }}
-          sx={{ minWidth: 150 }}
+          sx={{ minWidth: 160 }}
         >
-          <option value="">All</option>
-          <option value="O+">O+</option>
-          <option value="O-">O-</option>
-          <option value="A+">A+</option>
-          <option value="A-">A-</option>
-          <option value="B+">B+</option>
-          <option value="B-">B-</option>
-          <option value="AB+">AB+</option>
-          <option value="AB-">AB-</option>
+          {BLOOD_TYPES.map((t) => (
+            <option key={t} value={t}>{t || 'All'}</option>
+          ))}
         </TextField>
       </Box>
 
+      {/* Alerts */}
       {requestSuccess && (
-        <Alert severity="success" sx={{ mb: 2 }}>
+        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setRequestSuccess(false)}>
           Blood request submitted successfully!
         </Alert>
       )}
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+      {/* Loading State */}
+      {loading && (
+        <Box display="flex" justifyContent="center" my={4}>
+          <CircularProgress size={60} />
+        </Box>
       )}
 
-      {loading ? (
-        <Box display="flex" justifyContent="center" my={4}>
-          <CircularProgress />
-        </Box>
-      ) : filteredDonors.length === 0 ? (
+      {/* Empty State */}
+      {!loading && currentPageDonors.length === 0 && (
         <Typography variant="body1" align="center" sx={{ py: 4 }}>
-          No donors found matching your criteria.
+          {allDonors.length === 0 
+            ? 'No donors available.' 
+            : 'No donors match your search criteria.'}
         </Typography>
-      ) : (
+      )}
+
+      {/* Donor Grid */}
+      {!loading && currentPageDonors.length > 0 && (
         <>
           <Grid container spacing={3}>
-            {currentDonors.map((donor) => (
-              <Grid item key={donor.id} xs={12} sm={6} md={4} lg={4} xl={4}>
-                <DonorCard
-                  donor={donor}
-                  onRequestClick={() => handleRequestClick(donor)}
+            {currentPageDonors.map((donor) => (
+              <Grid key={donor.id} item xs={12} sm={6} md={3} lg={3}>
+                <DonorCard 
+                  donor={donor} 
+                  onRequestClick={() => handleRequestClick(donor)} 
                 />
               </Grid>
             ))}
           </Grid>
 
-          {filteredDonors.length > donorsPerPage && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Box display="flex" justifyContent="center" mt={4}>
               <Pagination
+                page={currentPage} 
                 count={totalPages}
-                page={currentPage}
                 onChange={handlePageChange}
-                color="primary"
-                size="large"
-                showFirstButton
+                color="primary" 
+                size="large" 
+                showFirstButton 
                 showLastButton
+                sx={{ '& .MuiPaginationItem-root': { fontSize: '1rem' } }}
               />
             </Box>
           )}
         </>
       )}
 
+      {/* Request Modal */}
       <RequestBloodModal
         open={requestModalOpen}
         onClose={() => setRequestModalOpen(false)}
-        onSubmit={handleSubmitRequest}
         donor={selectedDonor}
+        onSuccess={handleRequestSuccess}
       />
     </Container>
   );

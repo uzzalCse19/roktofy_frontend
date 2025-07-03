@@ -18,8 +18,10 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-white shadow sticky top-0 z-50 border-b dark:bg-gray-900 dark:text-white">
-      <div className="navbar max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-2">
+<header className="bg-white shadow sticky top-0 z-50 border-b dark:bg-gray-900 dark:text-white">
+  <div className="navbar max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-2">
+     {/* <header className="bg-white shadow sticky top-0 z-50 border-b dark:bg-gray-900 dark:text-white">
+      <div className="navbar max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-2">  */}
         {/* Brand */}
         <div className="flex-1">
           <Link to="/" className="text-2xl font-extrabold text-red-600 flex items-center gap-1">

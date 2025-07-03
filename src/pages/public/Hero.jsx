@@ -69,7 +69,9 @@ const Hero = () => {
   };
 
   return (
-    <div className="hero bg-base-200 min-h-screen flex items-center">
+    // <div className="hero bg-base-200 min-h-screen flex items-center">
+      <div className="hero bg-base-200 min-h-[65vh] flex items-center">
+
       <div className="hero-content w-full max-w-2xl mx-auto px-4 py-16">
         <div className="text-center space-y-8">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">

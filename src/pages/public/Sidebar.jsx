@@ -21,7 +21,7 @@ const Sidebar = () => {
       {/* Brand / Logo */}
       <div className="flex-1 mb-8 mt-4">
         <Link
-          to="/dashboard"
+          to="/"
           className="text-2xl font-extrabold text-red-600 flex items-center gap-1"
         >
           <FaTint className="text-red-600" />
