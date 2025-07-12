@@ -28,22 +28,17 @@ const Login = () => {
   };
 
   /* -------- submit -------- */
-  const onSubmit = async (data) => {
-    setLoading(true);
-    setAuthError('');
-    try {
-      await loginUser(data);
-      navigate('/');
-    } catch (err) {
-      console.error('Login failed:', err);
-      setAuthError(
-        err.response?.data?.detail ||
-        'Invalid credentials, please try again.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+const onSubmit = async (data) => {
+  setLoading(true);
+  setAuthError('');
+  const result = await loginUser(data);
+  if (result.success) {
+    navigate('/');
+  } else {
+    setAuthError(result.message || 'Invalid credentials, please try again.');
+  }
+  setLoading(false);
+};
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12 bg-base-200">
