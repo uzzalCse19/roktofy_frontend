@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   UsersIcon, ClipboardListIcon, HeartIcon, CashIcon,
   BanIcon, CheckIcon, PencilIcon, ExclamationCircleIcon,
@@ -10,12 +10,26 @@ import { FaBell, FaUserCircle, FaTint } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 
+// Custom hook for detecting clicks outside an element
+function useClickOutside(ref, callback) {
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (ref.current && !ref.current.contains(event.target)) {
+        callback();
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref, callback]);
+}
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
-const { user } = useAuth();
+  const { user } = useAuth();
   const [requests, setRequests] = useState([]);
   const [donations, setDonations] = useState([]);
   const navigate = useNavigate();
@@ -29,6 +43,12 @@ const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  
+  const sidebarRef = useRef();
+  useClickOutside(sidebarRef, () => {
+    if (mobileSidebarOpen) setMobileSidebarOpen(false);
+  });
 
   // Data fetching
   const fetchData = async (endpoint, setData) => {
@@ -362,14 +382,26 @@ const { user } = useAuth();
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-              {/* Admin Navbar */}
+      {/* Admin Navbar */}
       <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-40 h-16 border-b border-gray-200">
         <div className="flex items-center justify-between h-full px-6 mx-auto max-w-screen-2xl">
-          {/* Logo Section */}
-          <Link to="/" className="flex items-center space-x-2">
-            <FaTint className="text-red-600 text-2xl" />
-            <span className="text-xl font-bold text-red-600 tracking-tight">Roktofy</span>
-          </Link>
+          <div className="flex items-center space-x-4">
+            {/* Hamburger menu for mobile */}
+            <button 
+              className="md:hidden text-gray-500 hover:text-gray-700"
+              onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+            >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            
+            {/* Logo Section */}
+            <Link to="/" className="flex items-center space-x-2">
+              <FaTint className="text-red-600 text-2xl" />
+              <span className="text-xl font-bold text-red-600 tracking-tight">Roktofy</span>
+            </Link>
+          </div>
 
           {/* User Navigation */}
           <div className="flex items-center space-x-6">
@@ -401,50 +433,66 @@ const { user } = useAuth();
           </div>
         </div>
       </header>
-      {/* Sidebar */}
-      <div className="hidden md:flex md:flex-shrink-0 ">
-        <div className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-lg">
-          <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-red-600 to-red-700">
-            <h1 className="text-xl font-bold text-white">Admin Pannel</h1>
-          </div>
-          
-          <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
-            {[
-              { id: 'dashboard', icon: <ClipboardListIcon className="h-5 w-5" />, label: 'Dashboard' },
-              { id: 'users', icon: <UsersIcon className="h-5 w-5" />, label: 'User Management' },
-              { id: 'requests', icon: <HeartIcon className="h-5 w-5" />, label: 'Blood Requests' },
-              { id: 'donations', icon: <CashIcon className="h-5 w-5" />, label: 'Donations' },
-              { id: 'audit-logs', icon: <ShieldCheckIcon className="h-5 w-5" />, label: 'Audit Logs' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-red-100 text-red-700 shadow-inner'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <span className="mr-3">{tab.icon}</span>
-                {tab.label}
-                {activeTab === tab.id && (
-                  <div className="ml-auto h-2 w-2 bg-red-500 rounded-full"></div>
-                )}
-              </button>
-            ))}
-          </nav>
 
-          <div className="p-4 border-t border-gray-200">
-            <button className="flex items-center w-full text-sm font-medium text-gray-700 hover:text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors">
-              <LogoutIcon className="h-5 w-5 mr-2" />
-              Logout
+      {/* Mobile Sidebar Overlay */}
+      {mobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
+          onClick={() => setMobileSidebarOpen(false)}
+        ></div>
+      )}
+
+      {/* Sidebar - shown on desktop, hidden on mobile unless open */}
+      <div 
+        ref={sidebarRef}
+        className={`fixed md:relative z-50 md:z-auto inset-y-0 left-0 transform ${
+          mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } md:translate-x-0 transition-transform duration-300 ease-in-out w-64 bg-white border-r border-gray-200 flex flex-col shadow-lg md:shadow-none`}
+      >
+        <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-red-600 to-red-700">
+          <h1 className="text-xl font-bold text-white">Admin Panel</h1>
+        </div>
+        
+        <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
+          {[
+            { id: 'dashboard', icon: <ClipboardListIcon className="h-5 w-5" />, label: 'Dashboard' },
+            { id: 'users', icon: <UsersIcon className="h-5 w-5" />, label: 'User Management' },
+            { id: 'requests', icon: <HeartIcon className="h-5 w-5" />, label: 'Blood Requests' },
+            { id: 'donations', icon: <CashIcon className="h-5 w-5" />, label: 'Donations' },
+            { id: 'audit-logs', icon: <ShieldCheckIcon className="h-5 w-5" />, label: 'Audit Logs' },
+            { id: 'settings', icon: <CogIcon className="h-5 w-5" />, label: 'Settings' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setActiveTab(tab.id);
+                setMobileSidebarOpen(false);
+              }}
+              className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                activeTab === tab.id
+                  ? 'bg-red-100 text-red-700 shadow-inner'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <span className="mr-3">{tab.icon}</span>
+              {tab.label}
+              {activeTab === tab.id && (
+                <div className="ml-auto h-2 w-2 bg-red-500 rounded-full"></div>
+              )}
             </button>
-          </div>
+          ))}
+        </nav>
+
+        <div className="p-4 border-t border-gray-200">
+          <button className="flex items-center w-full text-sm font-medium text-gray-700 hover:text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors">
+            <LogoutIcon className="h-5 w-5 mr-2" />
+            Logout
+          </button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto pt-16">
+      <div className="flex-1 overflow-auto pt-16 md:pt-0">
         <div className="p-6">
           {error && (
             <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
@@ -798,4 +846,3 @@ const { user } = useAuth();
 };
 
 export default AdminDashboard;
-
