@@ -9,7 +9,7 @@ const Home = () => {
   const [donors, setDonors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [expandedCard, setExpandedCard] = useState(null); // For blog section
+  const [expandedCard, setExpandedCard] = useState(null);
 
   useEffect(() => {
     const fetchDonors = async () => {
@@ -95,57 +95,61 @@ const Home = () => {
 
                 <PublicStatsDashboard />
 
-                {/* 5️⃣ Updated Blog/FAQ Section */}
-                <section className="py-16 bg-white">
-                  <div className="max-w-7xl mx-auto px-6">
-                    <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-                      Blood Donation FAQs
-                    </h3>
+                {/* Updated Blog/FAQ Section */}
+               {/* Updated Blog/FAQ Section */}
+<section className="py-16 bg-white">
+  <div className="max-w-7xl mx-auto px-6">
+    <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+      Blood Donation FAQs
+    </h3>
 
-                    {/* Expanded Card Modal */}
-                    {expandedCard && (
-                      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                        <div className="bg-white p-8 rounded-lg shadow-xl max-w-2xl relative">
-                          <button 
-                            onClick={() => setExpandedCard(null)}
-                            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-                          >
-                            ✕
-                          </button>
-                          <h4 className="text-2xl font-semibold mb-4">
-                            {blogData.find(item => item.id === expandedCard).title}
-                          </h4>
-                          <p className="text-gray-700">
-                            {blogData.find(item => item.id === expandedCard).fullContent}
-                          </p>
-                        </div>
-                      </div>
-                    )}
+    {/* FAQ Cards */}
+    <div className="grid gap-8 md:grid-cols-3">
+      {blogData.map((item) => (
+        <div key={item.id} className="flex flex-col">
+          <article className="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow flex-grow">
+            {/* <div className="bg-red-600 text-white font-bold rounded-full w-8 h-8 flex items-center justify-center mb-3">
+              {item.id}
+            </div> */}
+            <h4 className="text-xl font-semibold mb-2">
+              {item.title}
+            </h4>
+            <p className="text-gray-700 mb-4 line-clamp-3">
+              {item.excerpt}
+            </p>
+            <button 
+              onClick={() => toggleExpand(item.id)}
+              className="text-red-600 font-medium hover:underline flex items-center"
+            >
+              {expandedCard === item.id ? 'Show Less' : 'Read More →'}
+            </button>
+          </article>
 
-                    {/* FAQ Cards */}
-                    <div className="grid gap-8 md:grid-cols-3">
-                      {blogData.map((item) => (
-                        <article 
-                          key={item.id} 
-                          className="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                        >
-                          <h4 className="text-xl font-semibold mb-2">
-                            {item.title}
-                          </h4>
-                          <p className="text-gray-700 mb-4 line-clamp-3">
-                            {item.excerpt}
-                          </p>
-                          <button 
-                            onClick={() => toggleExpand(item.id)}
-                            className="text-red-600 font-medium hover:underline"
-                          >
-                            Read More →
-                          </button>
-                        </article>
-                      ))}
-                    </div>
-                  </div>
-                </section>
+          {/* Expanded content - appears below the card */}
+{expandedCard && (
+  <div className="fixed inset-0 flex items-center justify-center z-50 px-4">
+    <div className="bg-white w-full max-w-2xl p-6 rounded-xl shadow-2xl border border-red-200">
+      <h4 className="text-2xl font-bold mb-4 text-red-600">
+        {blogData.find((item) => item.id === expandedCard)?.title}
+      </h4>
+      <p className="text-gray-700 mb-6">
+        {blogData.find((item) => item.id === expandedCard)?.fullContent}
+      </p>
+      <button
+        onClick={() => setExpandedCard(null)}
+        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
 
                 {/* Final CTA Section */}
                 <div className="bg-white flex flex-col mt-20">
