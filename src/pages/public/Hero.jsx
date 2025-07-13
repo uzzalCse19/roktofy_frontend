@@ -24,7 +24,7 @@ const Hero = () => {
       } else {
         setMessage("Please complete your donor profile first.");
         setMessageType("warning");
-        setTimeout(() => navigate('/donor-profile'), 3000);
+        setTimeout(() => navigate('/create-donor-profile'), 3000);
       }
     } catch (error) {
       if (error.response?.status === 401) {

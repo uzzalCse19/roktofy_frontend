@@ -31,7 +31,7 @@ const Login = () => {
 const onSubmit = async (data) => {
   setLoading(true);
   setAuthError('');
-  const result = await loginUser(data);
+  const result = await loginUser(data);f
   if (result.success) {
     navigate('/');
   } else {
